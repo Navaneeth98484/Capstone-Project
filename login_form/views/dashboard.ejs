@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(144, 198, 214);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Changed to 100vh for full height coverage */
+            flex-direction: column;
+        }
+        .container {
+            background-color:rgb(145, 218, 105);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+        }
+        .search-bar {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            display: none; /* Initially hidden */
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center; /* Center results */
+        }
+        .results img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome to your Dashboard, <span id="username"><%= username %></span>!</h2>
+        <p>Login successful!</p>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search for cat images...">
+            <button id="search-button">Search</button>
+        </div>
+        <p class="error-message" id="error-message">Something went wrong. Please try again.</p>
+    </div>
+    <div class="results" id="results"></div>
+
+    <script>
+        document.getElementById('search-button').addEventListener('click', async () => {
+            const query = document.getElementById('search-input').value;
+            const url = "https://api.thecatapi.com/v1/images/search?limit=1";
+    
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayResult(data[0]);
+                    clearError();
+                } else {
+                    showError('No results found.');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showError('Something went wrong. Please try again.');
+            }
+        });
+
+        function displayResult(result) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            const img = document.createElement('img');
+            img.src = result.url;
+            img.alt = "Cat image";
+            resultsContainer.appendChild(img);
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'block';
+            errorMessage.innerText = message;
+        }
+
+        function clearError() {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
